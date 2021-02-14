@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNC Cherry Blossom Trees</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+
+   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+
+   <script src="https://unpkg.com/esri-leaflet@2.5.3/dist/esri-leaflet.js"
+    integrity="sha512-K0Vddb4QdnVOAuPJBHkgrua+/A9Moyv8AQEWi0xndQ+fqbRfAFd47z4A9u1AW/spLO0gEaiE1z98PK1gl5mC5Q=="
+    crossorigin=""></script>
+
+   <script src = "./data/flowering_cherries_4326.geojson"></script>
+
+</head>
+
+<style>
+    body {
+        background-color: bisque;
+    }
+  
+    #daBlueBox {
+        background-color:teal;
+        position: absolute;
+        top: 15%;
+        width: 100%;
+        height: 35%;
+        font-size: x-large;
+    }
+  
+    .daLavenderBox {
+        background-color:lavender;
+        position:absolute;
+        top:30%;
+        left:25%;
+        width:50%;
+        height:35%;
+        font-size: large;
+    }
+
+    #daGrayBox {
+        background-color:gray;
+        position: absolute;
+        top: 150%;
+        width: 50%;
+        height: 10%;
+        right: 25%
+    }
+
+    h1 {
+        position: relative;
+        text-align: center;
+        font-family:Georgia, 'Times New Roman', Times, serif;
+        font-size: x-large;
+    }
+
+    h2 {
+        position: relative;
+        text-align: center;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-size: medium;
+    }
+
+   </style>
+  
+<body>
+
+    <div id= "daGrayBox">
+        <h2> <a href="https://www.housebeautiful.com/lifestyle/gardening/g3393/cherry-blossoms-facts/#:~:text=1%20Cherry%20blossoms%20are%20Japan's%20national%20flower.&text=Known%20as%20%22sakura%22%20in%20Japanese,trees%20is%20a%20Japanese%20tradition.&text=The%20century%2Dold%20custom%20is,%2C%22%20which%20means%20flower%20viewing.">Click for more information about cherry blossoms!</a> </h2>
+        </div>
+
+    </div>
+    <div id="daBlueBox">
+        <div class="daLavenderBox">
+            <h1 onClick="daAlert()">Cherry Blossoms of UNC-Chapel Hill </h1>
+        </div>
+    </div>
+      
+    <div id="map-container">
+        <div id='map'>
+        </div>
+      </div>
+      
+      <div id="basemaps-wrapper" class="leaflet-bar">
+        <select id="basemaps">
+            <option value="Streets">Streets</option>
+          <option value="Topographic">Topographic</option>
+          <option value="Imagery">Imagery</option>
+        </select>
+      </div>
+
+    <div id="mapid"></div>
+    <style>
+#mapid{width: 1250px; height: 500px;}
+
+#map-container {
+          position:relative;
+          height: 300px;
+          width: 1000px;
+          right: 700px; }
+          #map {
+        position: relative;
+        height: inherit; 
+        width: inherit;
+      }
+    </style>
+
+<script>
+    var map= L.map('mapid').setView([35.9121, -79.0512], 17);
+    var layer= L.esri.basemapLayer('Streets').addTo(map);
+    var layerLabels;
+
+    function setBasemap (basemap) {
+    if (layer) {
+      map.removeLayer(layer);
+    }
+
+    layer = L.esri.basemapLayer(basemap);
+
+    map.addLayer(layer);
+
+    if (layerLabels) {
+      map.removeLayer(layerLabels);
+    }
+
+    if (
+      basemap === 'ShadedRelief' ||
+      basemap === 'Oceans' ||
+      basemap === 'Gray' ||
+      basemap === 'DarkGray' ||
+      basemap === 'Terrain'
+    ) {
+      layerLabels = L.esri.basemapLayer(basemap + 'Labels');
+      map.addLayer(layerLabels);
+    } else if (basemap.includes('Imagery')) {
+      layerLabels = L.esri.basemapLayer('ImageryLabels');
+      map.addLayer(layerLabels);
+    }
+  }
+
+  </script>
+
+  <script>
+  document
+    .querySelector('#basemaps')
+    .addEventListener('change', function (e) {
+      var basemap = e.target.value;
+      setBasemap(basemap);
+    });
+    
+    var map
+    // L.geoJSON(cherries).addTo(map)
+    var uncIcon = L.icon({
+        iconUrl: '/Users/sophi/Desktop/GEOG 456/Leaflet/singleblossom2.png',
+        iconSize: [20,20],
+        popupAnchor: [0,0]
+    });
+
+    var customPopup = "Cherry Blossoms <br> UNC Chapel Hill<br/><img src='/Users/sophi/Desktop/GEOG 456/Leaflet/uncblossoms.jpg' width='100px'/>";
+
+    L.geoJSON(cherries, { // a
+pointToLayer: function (feature, latlng) { // b
+return L.marker(latlng, {icon: uncIcon});}}) // c
+.bindPopup(customPopup) // d
+.addTo(map); //
+
+</script>
+
+<script src = "./data/old_well_4326.geojson"></script>
+
+<script>
+
+ // L.geoJSON(uncwell).addTo(map)
+ var uncIcon = L.icon({
+        iconUrl: '/Users/sophi/Desktop/GEOG 456/Leaflet/old-well-logo.jpg',
+        iconSize: [30,50],
+        popupAnchor: [0,0]
+    });
+
+    var customPopup = "Iconic UNC-Chapel Hill Well<br/><img src='/Users/sophi/Desktop/GEOG 456/Leaflet/the-old-well.jpg' width='100px'/>";
+        
+    L.geoJSON(uncwell, { // a
+pointToLayer: function (feature, latlng) { // b
+return L.marker(latlng, {icon: uncIcon});}}) // c
+.bindPopup(customPopup) // d
+.addTo(map); //
+
+</script>
+
+</script>
+    
+</body>
+</html>
